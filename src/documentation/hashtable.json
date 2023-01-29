@@ -1,0 +1,111 @@
+{
+	"name":        "Hashtable",
+	"description": "A generic Hashtable implementation using AVLTree for underlying data structure. AVL tree is a self-balancing binary search tree, which ensures that the height of the tree remains balanced at all times and guarantees a time complexity of O(log n) for all operations. This makes the Hashtable efficient for both small and large datasets.",
+	"type":        "class",
+	"properties":  [
+		{
+			"name":        "root",
+			"type":        "AVLTreeNode<T>",
+			"description": "The root node of the AVL tree"
+		},
+		{
+			"name":        "eventEmitter",
+			"type":        "EventEmitter | undefined",
+			"description": "An optional event emitter that can be used to emit events when certain operations are performed on the Hashtable"
+		}
+	],
+	"methods":     [
+		{
+			"name":        "constructor",
+			"description": "Creates an instance of Hashtable. If useEventEmitter is set to true, it will use event emitter",
+			"params":      [
+				{
+					"name":        "useEventEmitter",
+					"type":        "boolean",
+					"default":     "false",
+					"description": "Indicates if event emitter should be used"
+				}
+			]
+		},
+		{
+			"name":        "put",
+			"description": "Inserts a new key-value pair or updates the value of an existing key. If the key already exists in the hashtable, it will generate a 'change' event. If the key does not exist in the hashtable, it will generate a 'add' event.",
+			"params":      [
+				{
+					"name":        "key",
+					"type":        "string",
+					"description": "The key to insert or update"
+				},
+				{
+					"name":        "value",
+					"type":        "T",
+					"description": "The value to associate with the key"
+				}
+			],
+			"returns":     {
+				"type":        "void",
+				"description": "void"
+			}
+		},
+		{
+			"name":        "get",
+			"description": "Retrieves the value associated with a key. If the key does not exist, it will throw an error",
+			"params":      [
+				{
+					"name":        "key",
+					"type":        "string",
+					"description": "The key to retrieve the value for"
+				}
+			],
+			"returns":     {
+				"type":        "T",
+				"description": "The value associated with the key"
+			}
+		},
+		{
+			"name":        "remove",
+			"description": "Removes a key-value pair from the hashtable. If the key does not exist, it will throw an error",
+			"params":      [
+				{
+					"name":        "key",
+					"type":        "string",
+					"description": "The key of the key-value pair to remove"
+				}
+			],
+			"returns":     {
+				"type":        "void",
+				"description": "void"
+			}
+		},
+		{
+			"name":        "toArray",
+			"description": "Returns a standard array representation of the hashtable. If the hashtable is empty, it will throw an error",
+			"returns":     {
+				"type":        "[string, T][]",
+				"description": "An array of key-value pairs"
+			}
+		},
+		{
+			"name":        "emitEvent",
+			"description": "Emits an event of the specified type with the specified value if the event emitter is used",
+			"params":      [
+				{
+					"name":        "type",
+					"type":        "string",
+					"description": "The type of event to emit"
+				},
+				{
+					"name":        "value",
+					"type":        "any",
+					"description": "The value to pass with the event"
+				}
+			],
+			"returns":     {
+				"type":        "void",
+				"description": "void"
+			}
+		}
+	]
+}
+
+,
