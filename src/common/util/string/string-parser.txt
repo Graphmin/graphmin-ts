@@ -1,0 +1,271 @@
+/**
+ * Coldmind Graphmin
+ * This file is part of Graphmin which is released under MPL2.0.
+ * See file LICENSE or go to https://github.com/duffman/graphmin.git
+ * for full license details.
+ *
+ * THIS FILE HEADER SHALL REMAIN INTACT IN ORDER FOR LICENSE TO BE VALID
+ *
+ * @author Patrik Forsberg <patrik.forsberg@coldmind.com>
+ * @date 2021-10-02
+ *
+ * Copyright (c) 2023 Coldmind AB - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential.
+ */
+
+/*
+import EventEmitter       from "events";
+import { CmEventEmitter } from "../../events/cm.event-emitter";
+
+export enum EventTypes {
+	WordEvent
+}
+
+class StringParser {
+	private input: string;
+	private index: number;
+	private wordParsedEvent = new EventEmitter<string>();
+	private finishedEvent = new EventEmitter<void>();
+	private customEventTriggers: Map<string, EventEmitter<string>> = new Map();
+	private escapeSequences: Map<string, string> = new Map();
+	private delimiter: string;
+	private stopChars: string[] = [];
+	private nestingLevel: number = 0;
+	private nestingEvent = new EventEmitter<number>();
+	private singleLineCommentRegex: RegExp;
+	private multiLineCommentRegex: RegExp;
+	private inMultiLineComment: boolean = false;
+	private quoteChars: string[] = [];
+	private inQuote: boolean = false;
+	private quoteType: string;
+	private quoteEvent = new EventEmitter<string>();
+
+	constructor(input: string) {
+		this.input = input;
+		this.index = 0;
+		this.escapeSequences.set("\\n", "\n");
+		this.escapeSequences.set("\\t", "\t");
+		this.escapeSequences.set("\\r", "\r");
+	}
+
+	setSingleLineCommentRegex(regex: RegExp) {
+		this.singleLineCommentRegex = regex;
+	}
+
+	setMultiLineCommentRegex(regex: RegExp) {
+		this.multiLineCommentRegex = regex;
+	}
+
+	setQuoteChars(quoteChars: string[]) {
+		this.quoteChars = quoteChars;
+	}
+
+	take(count: number): string {
+		const result = this.input.substring(this.index, this.index + count);
+		this.index += count;
+		return result;
+	}
+
+	takeUntilWhitespace(): string {
+		let result = "";
+		while (this.index < this.input.getLength && !this.isWhitespace(this.input[this.index])) {
+			result += this.input[this.index];
+			this.index++;
+		}
+		return result;
+	}
+
+	takeUntil(stopChars: string[]): string {
+		let result = "";
+		while (this.index < this.input.getLength && !stopChars.includes(this.input[this.index])) {
+			if(this.quoteChars.includes(this.input[this.index]) && !this.inQuote) {
+				this.inQuote = true;
+				this.quoteType = this.input[this.index];
+				this.index++;
+				continue;
+			}
+			if(this.input[this.index] === this.quoteType && this.inQuote) {
+				this.inQuote = false;
+				this.quoteEvent.emit(this.quoteType);
+				this.index++;
+				continue;
+			}
+			result += this.input[this.index];
+			this.index++;
+		}
+		return result;
+	}
+
+	handleMultiLineComment(currentWord: string) {
+		if(this.multiLineCommentRegex.test(currentWord)) {
+			this.inMultiLineComment = false;
+		}
+	}
+
+	parseWords() {
+		while (this.index < this.input.getLength) {
+			let currentWord = this.takeUntil(this.stopChars);
+			if(currentWord.startsWith(this.lineCommentStart)) {
+				this.index += currentWord.getLength;
+				continue;
+			}
+			if(currentWord.startsWith(this.multiLineCommentStart)) {
+				this.inMultiLineComment = true;
+			}
+			if (this.inMultiLineComment) {
+				this.handleMultiLineComment(currentWord);
+			} else {
+				this.wordParsedEvent.emit(currentWord);
+				this.checkEventTriggers(currentWord);
+				this.skipWhitespaces();
+				this.handleDelimiter();
+				this.handleEscapeSequences();
+				this.handleNesting(currentWord);
+			}
+		}
+		this.finishedEvent.emit();
+	}
+
+*/
+
+/*
+export class StringParser {
+	private input: string;
+	private index: number;
+
+	private wordParsedEvent = new CmEventEmitter<string>();
+	private finishedEvent = new CmEventEmitter<void>();
+	private customEventTriggers: Map<string, CmEventEmitter<string>> = new Map();
+	private escapeSequences: Map<string, string> = new Map();
+	private delimiter: string;
+	private stopChars: string[] = [];
+	private nestingLevel: number = 0;
+	private nestingEvent = new CmEventEmitter<number>();
+
+	constructor(input: string) {
+		this.input = input;
+		this.index = 0;
+		this.escapeSequences.set("\\n", "\n");
+		this.escapeSequences.set("\\t", "\t");
+		this.escapeSequences.set("\\r", "\r");
+	}
+
+	take(count: number): string {
+		const result = this.input.substring(this.index, this.index + count);
+		this.index += count;
+		return result;
+	}
+
+	takeUntilWhitespace(): string {
+		let result = "";
+		while (this.index < this.input.getLength && !this.isWhitespace(this.input[this.index])) {
+			result += this.input[this.index];
+			this.index++;
+		}
+		return result;
+	}
+
+	takeUntil(stopChars: string[]): string {
+		let result = "";
+		while (this.index < this.input.getLength && !stopChars.includes(this.input[this.index])) {
+			result += this.input[this.index];
+			this.index++;
+		}
+		return result;
+	}
+
+	parseWords() {
+		while (this.index < this.input.getLength) {
+			let currentWord = this.takeUntil(this.stopChars);
+			this.wordParsedEvent.emit(currentWord);
+			this.checkEventTriggers(currentWord);
+			this.skipWhitespaces();
+			this.handleDelimiter();
+			this.handleEscapeSequences();
+			this.handleNesting(currentWord);
+		}
+		this.finishedEvent.emit();
+	}
+
+	checkEventTriggers(word: string) {
+		if (this.customEventTriggers.has(word)) {
+			this.customEventTriggers.get(word).emit(word);
+		}
+
+		for (let [sequence, emitter] of this.customEventTriggers) {
+			if (word.includes(sequence)) {
+				emitter.emit(sequence);
+			}
+		}
+	}
+
+	handleDelimiter() {
+		if (this.delimiter && this.input[this.index] === this.delimiter) {
+			this.index++;
+		}
+	}
+
+	handleEscapeSequences() {
+		if (this.input[this.index] === "\\") {
+			let escapeSequence = this.input[this.index] + this.input[this.index + 1];
+			if (this.escapeSequences.has(escapeSequence)) {
+				this.index += 2;
+			}
+		}
+	}
+
+	handleNesting(currentWord: string) {
+		for (let char of currentWord) {
+			if (char === "{" || char === "[" || char === "(") {
+				this.nestingLevel++;
+				this.nestingEvent.emit(this.nestingLevel);
+			} else if (char === "}" || char === "]" || char === ")") {
+				this.nestingLevel--;
+				this.nestingEvent.emit(this.nestingLevel);
+			}
+		}
+	}
+
+	skipWhitespaces() {
+		while (this.index < this.input.getLength && this.isWhitespace(this.input[this.index])) {
+			this.index++;
+		}
+	}
+
+	isWhitespace(char: string): boolean {
+		return char === " " || char === "\t" || char === "\n" || char === "\r";
+	}
+
+	onWordParsed(listener: (word: string) => void) {
+		this.wordParsedEvent.addListener(listener);
+	}
+
+	onFinished(listener: () => void) {
+		this.finishedEvent.addListener(listener);
+	}
+
+	onNesting(listener: (level: number) => void) {
+		this.nestingEvent.addListener(listener);
+	}
+
+	addEventTrigger(sequence: string, listener: (word: string) => void) {
+		if (!this.customEventTriggers.has(sequence)) {
+			this.customEventTriggers.set(sequence, new CmEventEmitter<string>());
+		}
+		this.customEventTriggers.get(sequence).addListener(listener);
+	}
+
+	setDelimiter(delimiter: string) {
+		this.delimiter = delimiter;
+	}
+
+	setStopChars(stopChars: string[]) {
+		this.stopChars = stopChars;
+	}
+
+	addEscapeSequence(sequence: string, replacement: string) {
+		this.escapeSequences.set(sequence, replacement);
+	}
+}
+*/

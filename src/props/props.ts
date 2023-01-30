@@ -13,11 +13,11 @@
  */
 
 import 'reflect-metadata';
-import { appendCmProp }  from "../../../hack-test/decorator/hack-deco1";
 import { CmPropManager } from "./props.helper";
 
 export interface PropOptions {
 	required?: boolean;
+	errorMessage?: string;
 	description?: string;
 }
 

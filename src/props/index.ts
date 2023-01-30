@@ -12,8 +12,8 @@
  * Proprietary and confidential.
  */
 
-export { MetaDataKeys } from "../constants";
-export { PropString }   from "./prop.string";
+export { MetaDataKeys }  from "../constants";
+export { PropString }    from "./prop.string";
 export { PropInt }       from "./prop.int";
 export { PropBool }      from "./prop.bool";
 export { PropDate }      from "./prop.date";

@@ -18,7 +18,7 @@ import { MetaDataKeys } from "../constants";
 
 export interface ApiControllerMetadata {
 	basePath: string;
-	version: string;
+	version?: string;
 	summary?: string;
 	tags?: string[];
 	requireAuth?: boolean

@@ -11,22 +11,9 @@ import ts from 'typescript';
 import sqlite from 'better-sqlite3';
 import { argv } from 'yargs';
 
-const args = argv
-	.option('src', {
-		alias: 's',
-		description: 'Source directory',
-		type: 'string',
-		demandOption: true
-	})
-	.option('db', {
-		alias: 'd',
-		description: 'SQLite database file',
-		type: 'string',
-		demandOption: true
-	}).argv;
 
 // Open the SQLite database
-const db = new sqlite(args.db);
+const db = new sqlite("args.db");
 db.exec(`CREATE TABLE IF NOT EXISTS comments (
   file TEXT NOT NULL,
   comment TEXT NOT NULL
@@ -88,7 +75,7 @@ function formatComment(comment: string): string {
 
 // Iterate through all TypeScript files in the src directory
 (async () => {
-	const files = await readDirRecursive(args.src);
+	const files = await readDirRecursive("args.src");
 	for (const file of files) {
 		if (path.extname(file) === '.ts') {
 			await extractJSDocComments(file);

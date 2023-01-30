@@ -5,7 +5,7 @@
 
 import { expect }     from "chai";
 import { CmDocStore } from "./cm.doc-store";
-import { Document }   from "./cm.document_spec";
+import { Document } from "./cm.store-document";
 
 describe('DocumentStore', () => {
 	let store: CmDocStore;
@@ -16,17 +16,7 @@ describe('DocumentStore', () => {
 	});
 
 	afterEach(async () => {
-		await store.transaction(async (db) => {
-			await new Promise((resolve, reject) => {
-				db.run('DELETE FROM documents', (err) => {
-					if (err) {
-						reject(err);
-					} else {
-						resolve(true);
-					}
-				});
-			});
-		});
+		await store.deleteAll();
 	});
 
 	describe('Semaphore', () => {

@@ -14,10 +14,11 @@
  * Proprietary and confidential.
  */
 
+import { IHashtable }  from "../common/util/hashtable/cm.hashtable.type";
 import { CmEvent }     from "../common/events/cm.event";
 import { CmHashTable } from "../common/util/hashtable/cm.hashtable";
 
-class DbHashtable<T> extends CmHashTable<T> {
+export class DbHashtable<T> extends CmHashTable<T> implements IHashtable<T> {
 	private tableName: string;
 
 	constructor(tableName: string, useEventEmitter: boolean = false) {
@@ -37,9 +38,11 @@ class DbHashtable<T> extends CmHashTable<T> {
 		});
 	}
 
-	put(key: string, value: T) {
+	put(key: string, value: T): IHashtable<T>  {
 		super.put(key, value);
 		this.emitEvent(CmEvent.Add, key);
+
+		return this;
 	}
 
 	remove(key: string) {

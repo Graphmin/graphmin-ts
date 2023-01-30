@@ -27,7 +27,7 @@ export function Endpoint(metadata: EndpointMetadata): MethodDecorator {
 }
 
 export interface EndpointMetadata {
-	path: string;
+	path?: string;
 	method: HttpMethod;
 	contentType?: string;
 	summary?: string;

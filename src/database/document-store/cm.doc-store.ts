@@ -15,7 +15,7 @@
  */
 
 import semaphore      from 'semaphore';
-import { Document }   from './cm.document_spec';
+import { Document } from './cm.store-document';
 import { DBPersist }  from "./persist/cm.doc-store-persist";
 import { IDBPersist } from "./persist/cm.doc-store-persist";
 
@@ -68,7 +68,7 @@ export class CmDocStore {
 	 * Initializes the database by creating the "documents" table and creating indexes on the columns
 	 */
 	private async init() {
-
+		// TODO
 	}
 
 	/**
@@ -188,6 +188,22 @@ export class CmDocStore {
 		finally {
 			this.sem.release();
 		}
+	}
+
+	public async deleteAll(): Promise<boolean> {
+		await this.sem.acquire();
+		try {
+			let success = true;
+			await this.dbPersist.deleteAll();
+
+			this.cache.delete("1");
+			return success;
+		}
+		finally {
+			this.sem.release();
+		}
+
+
 	}
 }
 

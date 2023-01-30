@@ -13,12 +13,12 @@
  */
 
 import "reflect-metadata";
-import { PropInt }           from "./prop.int";
-import { PropStringOptions } from "./prop.string";
-import { CmPropManager }     from "./props.helper";
+import { PropInt }            from "./prop.int";
+import { PropStringMetadata } from "./prop.string";
+import { CmPropManager }      from "./props.helper";
 import { PropsMetakeys }     from "./props.metakeys";
 
-export function PropOptional(options: PropStringOptions = {}): PropertyDecorator {
+export function PropOptional(options: PropStringMetadata = {}): PropertyDecorator {
 	return (target: Object, propertyKey: string) => {
 		CmPropManager.addPropName(propertyKey, target);
 		Reflect.defineMetadata(PropsMetakeys.KeyPropOptional, {}, target, propertyKey);

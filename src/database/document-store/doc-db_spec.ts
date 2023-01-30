@@ -5,21 +5,22 @@
 
 import { expect }     from 'chai';
 import { CmDocStore } from "./cm.doc-store";
-import { Document }   from "./cm.doc-store";
+import { Document } from './cm.store-document';
 import { DBPersist }  from "./persist/cm.doc-store-persist";
 
 describe('DocumentStore', () => {
 	let store: CmDocStore;
+	let persist: DBPersist;
 	const testDocument: Document = { id: '1', content: 'TestClass document', references: [] };
 	const updatedTestDocument: Document = { id: '1', content: 'Updated test document', references: [] };
 
 	beforeEach(() => {
 		store = new CmDocStore();
-		persist = new DBPersist():
+		persist = new DBPersist();
 	});
 
 	afterEach(async () => {
-		await store.transaction(async (db) => {
+		await persist.transaction(async (db) => {
 			await new Promise((resolve, reject) => {
 				db.run('DELETE FROM documents', (err) => {
 					if (err) {

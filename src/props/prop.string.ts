@@ -20,22 +20,21 @@ import { PropsMetakeys } from "./props.metakeys";
 
 /**
  * PropString decorator
- * @param {PropStringOptions} options
+ * @param {PropStringMetadata} options
  * @returns {PropertyDecorator}
  * @constructor
  */
-export function PropString(options: PropStringOptions = {}): PropertyDecorator {
+export function PropString(options: PropStringMetadata = {}): PropertyDecorator {
 	return (target: Object, propertyKey: string) => {
 		CmPropManager.addPropName(propertyKey, target);
 		Reflect.defineMetadata(PropsMetakeys.KeyPropString, options, target, propertyKey);
 
 		options = (!options) ? { required: true } : options;
-
-
 	}
 }
 
-export interface PropStringOptions extends PropOptions {
+export interface PropStringMetadata extends PropOptions {
+	default?: string;
 	minLength?: number;
 	maxLength?: number;
 	isAlphanumeric?: boolean;

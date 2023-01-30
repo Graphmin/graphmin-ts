@@ -16,26 +16,60 @@
 
 import { HttpStatusCode } from "../http/http-status.type";
 
-export class IEndpointResponse {
+export interface IEndpointResponse {
 	code: HttpStatusCode;
 	data: any;
+
+	awaitData(data: Promise<any>): Promise<IEndpointResponse>;
+	safeAwaitData(data: Promise<any>): Promise<IEndpointResponse>;
+	setData(data: any): IEndpointResponse;
 }
 
 export class EndpointResponse implements IEndpointResponse{
 	code: HttpStatusCode;
 	data: any;
 
-	constructor(bodyData: any, statusCode: HttpStatusCode) {
+	constructor(bodyData?: any, statusCode: HttpStatusCode = HttpStatusCode.OK) {
 		this.code = statusCode;
 		this.data = bodyData;
 	}
 
-	static success(data: any, code: HttpStatusCode = HttpStatusCode.OK): IEndpointResponse {
-		return  new EndpointResponse(data, code);
+	async awaitData(data: Promise<any>): Promise<IEndpointResponse> {
+		this.data = await data;
+		return this;
 	}
 
-	static fail(data: any, code: HttpStatusCode = HttpStatusCode.InternalServerError): IEndpointResponse {
-		return  new EndpointResponse(data, code);
+	async safeAwaitData(data: Promise<any>, errorCode?: HttpStatusCode): Promise<IEndpointResponse> {
+		try {
+			this.data = await data;
+			this.code = data ? HttpStatusCode.OK : errorCode ?? HttpStatusCode.NoContent;
+
+		} catch (e) {
+			this.code = HttpStatusCode.InternalServerError;
+		}
+
+		return this;
+	}
+
+	setData(data: any): IEndpointResponse {
+		this.data = data;
+		return this;
+	}
+
+	static safeAwaitData(data: Promise<any>, errorCode?: HttpStatusCode): Promise<IEndpointResponse> {
+		return new EndpointResponse().safeAwaitData(data, errorCode);
+	}
+
+	static result(data: any, error?: any, code: HttpStatusCode = HttpStatusCode.OK): IEndpointResponse {
+		return error ? EndpointResponse.fail(data) : EndpointResponse.success(data);
+	}
+
+	static success(data?: any, code: HttpStatusCode = HttpStatusCode.OK): IEndpointResponse {
+		return new EndpointResponse(data, code);
+	}
+
+	static fail(data?: any, code: HttpStatusCode = HttpStatusCode.InternalServerError): IEndpointResponse {
+		return new EndpointResponse(data, code);
 	}
 }
 

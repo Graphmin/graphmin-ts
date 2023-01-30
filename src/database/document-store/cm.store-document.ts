@@ -26,6 +26,6 @@ export class Document implements IDocument {
 	references?: Array<string>;
 
 	constructor() {
-		this.id = uuidv4();
+		//this.id = uuidv4();
 	}
 }

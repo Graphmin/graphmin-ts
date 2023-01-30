@@ -11,6 +11,7 @@
  * Unauthorized copying of this file, via any medium is strictly prohibited
  * Proprietary and confidential.
  */
+
 import { ICmTemplateEngine } from "../../build/templating/cm.template-engine";
 
 function generateInterface(target: any, templateEngine: ICmTemplateEngine) {

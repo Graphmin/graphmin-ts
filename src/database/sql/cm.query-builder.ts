@@ -15,18 +15,23 @@ class QueryBuilder {
 		this.middlewares.push(middleware);
 	}
 
-	private validateProps<T>(obj: T, props: Array<keyof T>) {
+	private validateProps<T = object>(obj: T, props: Array<keyof T>) {
 		if (!Array.isArray(props) || props.length === 0) {
 			throw new Error("Invalid input: props must be a non-empty array.");
 		}
-		for (const prop of props) {
+
+		props.forEach(props =>{
+
+		})
+
+		/*for (const prop of props) {
 			if (!(prop in obj)) {
 				throw new Error(`Invalid input: ${prop} is not a property of ${obj.constructor.name}`);
 			}
 			if (typeof obj[prop] !== "string" && typeof obj[prop] !== "number" && typeof obj[prop] !== "boolean") {
 				throw new Error(`Invalid input: ${prop} must be a string, number, or boolean`);
 			}
-		}
+		}*/
 	}
 
 	private buildSelect(obj: object, props: Array<keyof object>) {

@@ -35,79 +35,7 @@ program
 			]
 		);
 
-		// based on first list selection, show second list
-		let secondList = [];
-		if (firstList.firstChoice === 'Option 1') {
-			secondList = await prompt([
-										  {
-											  type   : 'list',
-											  name   : 'secondChoice',
-											  message: 'Please select a sub-option:',
-											  choices: [ 'Sub-option 1', 'Sub-option 2' ],
-										  },
-									  ]);
-		}
-		else if (firstList.firstChoice === 'Option 2') {
-			secondList = await prompt([
-										  {
-											  type   : 'list',
-											  name   : 'secondChoice',
-											  message: 'Please select a sub-option:',
-											  choices: [ 'Sub-option 3', 'Sub-option 4' ],
-										  },
-									  ]);
-		}
-		else {
-			secondList = await prompt([
-										  {
-											  type   : 'list',
-											  name   : 'secondChoice',
-											  message: 'Please select a sub-option:',
-											  choices: [ 'Sub-option 5', 'Sub-option 6' ],
-										  },
-									  ]);
-		}
 
-		// yes/no question
-		const confirmChoice = await prompt([
-											   {
-												   type   : 'confirm',
-												   name   : 'confirm',
-												   message: 'Are you sure you want to continue?',
-												   default: true,
-											   },
-										   ]);
-
-		if (!confirmChoice.confirm) {
-			console.log('Exiting wizard...');
-			return;
-		}
-
-		// checkbox list
-		const checkboxChoice = await prompt([
-												{
-													type   : 'checkbox',
-													name   : 'checkbox',
-													message: 'Please select additional options:',
-													choices: [ 'Option A', 'Option B', 'Option C' ],
-												},
-											]);
-
-		// text input
-		const textInput = await prompt([
-										   {
-											   type   : 'input',
-											   name   : 'text',
-											   message: 'Please enter some text:',
-										   },
-									   ]);
-
-		// show selections
-		console.log('Your selections:');
-		console.log(`First choice: ${ firstList.firstChoice }`);
-		console.log(`Second choice: ${ secondList.secondChoice }`);
-		console.log(`Additional options: ${ checkboxChoice.checkbox.join(', ') }`);
-		console.log(`Text input: ${ textInput.text }`);
 	});
 
 program.parse(process.argv);

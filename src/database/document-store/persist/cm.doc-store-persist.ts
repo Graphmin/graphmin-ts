@@ -15,16 +15,17 @@
  */
 
 import sqlite3      from "sqlite3";
-import { Document } from "../cm.document_spec";
+import { Document } from "../cm.store-document";
 
 export enum Sql {
- 	CREATE_TABLE = 'CREATE TABLE documents (id TEXT PRIMARY KEY, document TEXT, references TEXT);' +
+	CREATE_TABLE = 'CREATE TABLE documents (id TEXT PRIMARY KEY, document TEXT, references TEXT);' +
 				   'CREATE INDEX idx_document ON documents (document);' +
 				   'CREATE INDEX idx_references ON documents (references);',
 	INSERT       = 'INSERT INTO documents (id, document, references) VALUES (?, ?, ?)',
 	SELECT_BY_ID = 'SELECT * FROM documents WHERE id = ?',
 	UPDATE_BY_ID = 'UPDATE documents SET document = ?, references = ? WHERE id = ?',
-	DELETE_BY_ID = 'DELETE FROM documents WHERE id = ?'
+	DELETE_BY_ID = 'DELETE FROM documents WHERE id = ?',
+	DELETE_ALL   = 'DELETE FROM documents'
 }
 
 export interface IPersistResult {
@@ -34,11 +35,12 @@ export interface IPersistResult {
 }
 
 export class PersistResult implements IPersistResult {
-	constructor (
+	constructor(
 		public success: boolean = true,
 		public result?: Document,
 		public error?: Error | any
-	) {}
+	) {
+	}
 }
 
 export interface IDBPersist {
@@ -46,6 +48,7 @@ export interface IDBPersist {
 	add(document: Document): Promise<IPersistResult>
 	update(id: string, document: Document): Promise<IPersistResult>;
 	delete(document: Document): Promise<IPersistResult>;
+	deleteAll(): Promise<IPersistResult>;
 	transaction(cb: (db: sqlite3.Database) => Promise<void>): Promise<boolean>;
 }
 
@@ -63,13 +66,14 @@ export class DBPersist implements IDBPersist {
 	 * @returns {Promise<IPersistResult>}
 	 */
 	public async add(doc: Document): Promise<IPersistResult> {
-		let result  = new PersistResult();
+		let result = new PersistResult();
 
 		try {
 			await this.db.run(Sql.INSERT);
-		} catch (e) {
+		}
+		catch (e) {
 			result.success = false;
-			result.error = e;
+			result.error   = e;
 		}
 
 		return {
@@ -83,7 +87,7 @@ export class DBPersist implements IDBPersist {
 	 * @returns The retrieved document
 	 */
 	public async select(id: string): Promise<IPersistResult> {
-		const result: any = await this.db.get(Sql.SELECT_BY_ID, [id]);
+		const result: any = await this.db.get(Sql.SELECT_BY_ID, [ id ]);
 		if (result) {
 			const doc = {
 				content   : "",
@@ -94,7 +98,7 @@ export class DBPersist implements IDBPersist {
 
 			return {
 				success: true,
-				result: doc
+				result : doc
 			}
 		}
 	}
@@ -119,10 +123,11 @@ export class DBPersist implements IDBPersist {
 				success: true
 			}
 
-		} catch (e) {
+		}
+		catch (e) {
 			return {
 				success: false,
-				error: e
+				error  : e
 			}
 		}
 	}
@@ -133,27 +138,34 @@ export class DBPersist implements IDBPersist {
 	 */
 	public async delete(doc: Document): Promise<IPersistResult> {
 		try {
-			this.db.run(Sql.DELETE_BY_ID,[ doc.id ]);
-
+			this.db.run(Sql.DELETE_BY_ID, [ doc.id ]);
 			return new PersistResult();
-
-		} catch (e) {
+		}
+		catch (e) {
 			return new PersistResult(false, null, e);
 		}
+	}
 
-		/*
-		return new Promise((resolve, reject) => {
-			this.db.run(sql, params, (err) => {
-				if (err) {
-					reject(
-						err);
-				}
-				else {
-					resolve();
-				}
+	public async deleteAll(): Promise<IPersistResult> {
+		try {
+			await this.transaction(async (db) => {
+				await new Promise((resolve, reject) => {
+					db.run('DELETE FROM documents', (err) => {
+						if (err) {
+							reject(err);
+						}
+						else {
+							resolve(true);
+						}
+					});
+				});
 			});
-		});
-		*/
+			return new PersistResult();
+
+		}
+		catch (e) {
+			return new PersistResult(false, null, e);
+		}
 	}
 
 	/**
@@ -163,7 +175,6 @@ export class DBPersist implements IDBPersist {
 	 * @returns A boolean indicating whether the operation was successful or not
 	 */
 	public async transaction(cb: (db: sqlite3.Database) => Promise<void>): Promise<boolean> {
-		//await this.sem.acquire();
 		try {
 			let success = true;
 			await new Promise((resolve, reject) => {
@@ -207,7 +218,6 @@ export class DBPersist implements IDBPersist {
 			return success;
 		}
 		finally {
-			//this.sem.release();
 		}
 	}
 }

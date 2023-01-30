@@ -13,7 +13,6 @@
  */
 
 import 'reflect-metadata';
-import { UserParams }    from "../../../params/user.params";
 import { getAllProps }   from "./props.helper";
 import { PropsMetakeys } from "./props.metakeys";
 import { IPropsObject }  from "./props.object";
@@ -24,18 +23,19 @@ export interface IPropValidationResult {
 }
 
 export type KeyValueObj = {
-	[key: string]: string;
+	[ key: string ]: string;
 }
 
 export abstract class PropsObject implements IPropsObject {
 	public isValid: boolean = false;
-	public validate() : IPropValidationResult {
-		const res = validateProps(this);
+
+	public validate(): IPropValidationResult {
+		const res    = validateProps(this);
 		this.isValid = Object.keys(res).length > 0;
 
 		return {
 			isValid: this.isValid,
-			result: res
+			result : res
 		}
 	}
 }
@@ -68,7 +68,7 @@ export function validateProps(obj: object): KeyValueObj {
 	for (const key of keys) {
 		const metadata = Reflect.getMetadata(key, obj);
 
-		if (metadata && metadata.decorator ===  PropsMetakeys.KeyPropString) {
+		if (metadata && metadata.decorator === PropsMetakeys.KeyPropString) {
 			const value = obj[ key ];
 
 			// Validate the value according to the options specified in the decorator
@@ -89,9 +89,3 @@ export function validateProps(obj: object): KeyValueObj {
 
 	return result;
 }
-
-let userParams = new UserParams();
-
-let result = validateProps(userParams);
-
-console.log("Props validation ::", result);

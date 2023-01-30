@@ -4,9 +4,9 @@
  * See file LICENSE or go to https://github.com/duffman/graphmin.git
  * for full license details.
  *
- * THIS FILE HEADER SHALL REMAIN INTACT IN ORDER FOR LICENSE TO BE VALID 
+ * THIS FILE HEADER SHALL REMAIN INTACT IN ORDER FOR LICENSE TO BE VALID
  *
- * THIS FILE HEADER SHALL REMAIN INTACT IN ORDER FOR LICENSE TO BE VALID 
+ * THIS FILE HEADER SHALL REMAIN INTACT IN ORDER FOR LICENSE TO BE VALID
  *
  * @author Patrik Forsberg <patrik.forsberg@coldmind.com>
  * @date 2021-12-13
@@ -18,7 +18,7 @@
 
 import * as fs            from "fs";
 import path               from "path";
-import { GraphminConfig } from "./graphmin.config";
+import { GraphminConfig } from "../graphmin.config";
 
 describe('Config', () => {
 	let filePath1: string;
